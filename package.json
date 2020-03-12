@@ -1,0 +1,16 @@
+{
+  "name": "node-ibeacons",
+  "version": "0.1.0",
+  "description": "iBeacons emitter for Node",
+  "author": "jitsi.org",
+  "license": "MIT",
+  "main": "index.js",
+  "gypfile": true,
+  "os": [
+    "darwin"
+  ],
+  "dependencies": {
+    "node-addon-api": "*",
+    "bindings": "*"
+  }
+}
