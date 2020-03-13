@@ -3,8 +3,9 @@
 
 using namespace std;
 
-static char startEvent[] = "start";
-static char stopEvent[] = "stop";
+
+static char startEvent[] = "started";
+static char stopEvent[] = "stopped";
 static char errorEvent[] = "error";
 
 static iBeacons::IBeaconEmitter *emitter;
