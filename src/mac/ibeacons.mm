@@ -24,7 +24,6 @@ IBeaconEmitter::~IBeaconEmitter()
 void IBeaconEmitter::StartAdvertising(std::string uuid, int major, int minor, int measuredPower, state_change_cb cb)
 {
     NSUUID *uuid_ = [[NSUUID alloc] initWithUUIDString:[NSString stringWithUTF8String:uuid.c_str()]];
-    printf("YYY %p\n", (void*) this);
     [_impl->obj startForUUID:uuid_
                    withMajor:[NSNumber numberWithInt:major]
                    withMinor:[NSNumber numberWithInt:minor]

@@ -92,9 +92,7 @@
 - (void)peripheralManagerDidStartAdvertising:(CBPeripheralManager *)peripheral 
                                        error:(NSError *)error
 {
-    NSLog(@"Did start advertising! %@", error);
     if (_cb) {
-        printf("ZZZZZZ\n");
         _cb(YES, error != nil);
     }
 }
