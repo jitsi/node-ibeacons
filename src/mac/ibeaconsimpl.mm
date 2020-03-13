@@ -58,7 +58,7 @@
 
 - (void)maybeStart
 {
-    if (_ready && _region != nil) {
+    if ((_ready || _manager.state == CBManagerStatePoweredOn) && _region != nil) {
         [_manager startAdvertising:[_region peripheralDataWithMeasuredPower:_measuredPower]];
     }
 }
