@@ -1,4 +1,6 @@
 #include <napi.h>
+#include <uv.h>
+
 #include "ibeacons.h"
 
 using namespace std;
@@ -9,6 +11,7 @@ static char stopEvent[] = "stopped";
 static char errorEvent[] = "error";
 
 static iBeacons::IBeaconEmitter *emitter;
+uv_mutex_t tsMutex;
 static Napi::ThreadSafeFunction tsEmit = nullptr;
 
 
@@ -20,19 +23,19 @@ static void StateChangedCb(Napi::Env env, Napi::Function jsCallback, void *value
 };
 
 static void StateChanged(bool active, bool error) {
-  if (tsEmit == nullptr) {
-    fprintf(stderr, "No tsEmit\n");
-    return;
+  uv_mutex_lock(&tsMutex);
+
+  if (tsEmit != nullptr) {
+    if (active) {
+      tsEmit.NonBlockingCall(static_cast<void *>(startEvent), StateChangedCb);
+    } else if (error) {
+      tsEmit.NonBlockingCall(static_cast<void *>(errorEvent), StateChangedCb);
+    } else {
+      tsEmit.NonBlockingCall(static_cast<void *>(stopEvent), StateChangedCb);
+    }
   }
-  if (active) {
-    tsEmit.NonBlockingCall(static_cast<void *>(startEvent), StateChangedCb);
-  } else if (error) {
-    tsEmit.NonBlockingCall(static_cast<void *>(errorEvent), StateChangedCb);
-  } else {
-    tsEmit.NonBlockingCall(static_cast<void *>(stopEvent), StateChangedCb);
-    tsEmit.Release();
-    tsEmit = nullptr;
-  }
+
+  uv_mutex_unlock(&tsMutex);
 }
 
 Napi::Value Start(const Napi::CallbackInfo& info) {
@@ -49,9 +52,11 @@ Napi::Value Start(const Napi::CallbackInfo& info) {
   int measuredPower = info[3].As<Napi::Number>().Int32Value();
   Napi::Function emit = info[4].As<Napi::Function>();
 
+  uv_mutex_lock(&tsMutex);
   if (tsEmit == nullptr) {
     tsEmit = Napi::ThreadSafeFunction::New(env, emit, "Emit Fn", 0, 1 );
   }
+  uv_mutex_unlock(&tsMutex);
 
   emitter->StartAdvertising(uuid, major, minor, measuredPower, StateChanged);
 
@@ -63,11 +68,19 @@ Napi::Value Stop(const Napi::CallbackInfo& info) {
 
   emitter->StopAdvertising();
 
+  uv_mutex_lock(&tsMutex);
+  if (tsEmit != nullptr) {
+    tsEmit.Release();
+    tsEmit = nullptr;
+  }
+  uv_mutex_unlock(&tsMutex);
+
   return env.Undefined();
 }
 
 // Init
 Napi::Object Init(Napi::Env env, Napi::Object exports) {
+  uv_mutex_init(&tsMutex);
   emitter = new iBeacons::IBeaconEmitter();
   exports["start"] = Napi::Function::New(env, Start);
   exports["stop"] = Napi::Function::New(env, Stop);
