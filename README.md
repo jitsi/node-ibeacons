@@ -11,6 +11,8 @@ has support for it.
 
 ### API
 
+The API has been with simplicity in mind. Checkout an example [here](./example.js).
+
 #### beaconEmitter.start(uuid, [major, [minor, [measuredPower]]])
 
 Starts emitting an ibeacon with the given proximity UUID, major, minor at the
