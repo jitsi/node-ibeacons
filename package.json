@@ -1,5 +1,5 @@
 {
-  "name": "node-ibeacons",
+  "name": "@jitsi/node-ibeacons",
   "version": "0.1.0",
   "description": "iBeacons emitter for Node",
   "author": "jitsi.org",
