@@ -40,7 +40,10 @@
             ],
           }
         }]
-      ]
+      ],
+      'variables' : {
+        'openssl_fips': '',
+      }
     }
   ]
 }
