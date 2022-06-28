@@ -36,8 +36,14 @@
             'MACOSX_DEPLOYMENT_TARGET': '10.13',
             'OTHER_CFLAGS': [
               '-ObjC++',
-              '-std=c++11'
+              '-std=c++11',
+              '-arch x86_64',
+              '-arch arm64'
             ],
+            'OTHER_LDFLAGS': [
+              '-arch x86_64',
+              '-arch arm64'
+            ]
           }
         }]
       ],
